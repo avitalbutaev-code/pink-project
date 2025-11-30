@@ -7,6 +7,7 @@ var cors = require("cors");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var postsRouter = require("./routes/posts");
+const commentsRouter = require("./routes/comments");
 var app = express();
 
 app.set("views", path.join(__dirname, "views"));
@@ -20,7 +21,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
-app.use("/posts");
+app.use("/posts", postsRouter);
+app.use("/comments", commentsRouter);
 app.use(function (req, res, next) {
   next(createError(404));
 });
