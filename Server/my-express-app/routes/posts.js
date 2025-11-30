@@ -3,22 +3,46 @@ var router = express.Router();
 const { createTables } = require("../scripts/createTables");
 const multer = require("multer");
 const os = require("os");
-
+const { handleError } = require('../services/handleError');
 const upload = multer({ dest: os.tmpdir() });
-
-router.get("/", function (req, res, next) {
-  res.render("index", { title: "Express" });
+router.get('/', async (req, res) => {
+  try {
+    const classrooms = await ;
+    res.json(classrooms);
+  } catch (error) {
+    handleError(error, res);
+  }
 });
-router.get("/:user", function (req, res, next) {
-  res.render("index", { title: "Express" });
+router.get("/:user", async (req, res) => {
+  try {
+    const classrooms = await ;
+    res.json(classrooms);
+  } catch (error) {
+    handleError(error, res);
+  }
 });
-router.delete("/:user/:postid", function (req, res, next) {
-  res.render("index", { title: "Express" });
+router.delete("/:user/:postid", async (req, res) => {
+  try {
+    const classrooms = await ;
+    res.json(classrooms);
+  } catch (error) {
+    handleError(error, res);
+  }
 });
-router.put("/:user/:postid", function (req, res, next) {
-  res.render("index", { title: "Express" });
+router.put("/:user/:postid",async (req, res) => {
+  try {
+    const classrooms = await ;
+    res.json(classrooms);
+  } catch (error) {
+    handleError(error, res);
+  }
 });
-router.post("/:user/", function (req, res, next) {
-  res.render("index", { title: "Express" });
+router.post("/:user/",async (req, res) => {
+  try {
+    const classrooms = await ;
+    res.json(classrooms);
+  } catch (error) {
+    handleError(error, res);
+  }
 });
 module.exports = router;
