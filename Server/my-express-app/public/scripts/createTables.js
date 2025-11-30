@@ -4,36 +4,74 @@ const path = require("path");
 
 async function createTables() {
   try {
-    const tables = await fs.readdir(path.join(__dirname, "../entities"));
-    for (const table of tables) {
-      if (path.extname(table) !== ".json") {
-        console.log("Skipping non-json file:", table);
+    console.log("🚀 Starting to create tables...");
+    console.log("Connected to database:", connection.config.database);
+
+    const entitiesPath = path.join(__dirname, "../entities");
+    let tables = await fs.readdir(entitiesPath);
+
+    const tableNames = tables.map((f) => path.parse(f).name);
+
+    const dependencyOrder = ["users", "password", "posts", "comments", "todos"];
+
+    tables.sort((a, b) => {
+      const nameA = path.parse(a).name;
+      const nameB = path.parse(b).name;
+
+      const indexA = dependencyOrder.indexOf(nameA);
+      const indexB = dependencyOrder.indexOf(nameB);
+
+      return indexA - indexB;
+    });
+
+    for (const file of tables) {
+      if (!file.endsWith(".json")) {
+        console.log("⚠️  Skipping non-json file:", file);
         continue;
       }
-      const table_name = path.parse(table).name;
-      console.log("table:", table_name);
-      const readTable = await fs.readFile(
-        path.join(__dirname, "../entities", table),
+
+      const tableName = path.parse(file).name;
+      console.log(`\n📌 Creating table: ${tableName}`);
+
+      const fileContent = await fs.readFile(
+        path.join(entitiesPath, file),
         "utf-8"
       );
-      if (!readTable) continue;
-      const tableObj = JSON.parse(readTable);
-      let columns = "";
+      const tableObj = JSON.parse(fileContent);
+
+      let columns = [];
+      let constraints = [];
+
       for (const key of Object.keys(tableObj)) {
-        columns += `${key} ${tableObj[key]},`;
+        if (key === "__constraints") {
+          constraints = tableObj[key];
+        } else {
+          columns.push(`${key} ${tableObj[key]}`);
+        }
       }
-      columns = columns.slice(0, -1);
 
-      const query = `CREATE TABLE IF NOT EXISTS ${table_name} (
-        ${columns}
-      );`;
+      if (constraints.length > 0) {
+        columns.push(...constraints);
+      }
 
-      await connection.promise().query(query);
+      const query = `
+        CREATE TABLE IF NOT EXISTS ${tableName} (
+          ${columns.join(",\n")}
+        );
+      `;
 
-      console.log(` Table ${table_name} created`);
+      try {
+        await connection.promise().query(query);
+        console.log(`✅ Table "${tableName}" created successfully.`);
+      } catch (err) {
+        console.error(`❌ Error creating "${tableName}":`, err);
+        throw err;
+      }
     }
+
+    console.log("\n🎉 All tables created successfully!");
   } catch (error) {
-    console.error(" Error creating tables:", error);
+    console.error("\n🔥 Fatal Error:", error);
   } finally {
     connection.end();
   }
