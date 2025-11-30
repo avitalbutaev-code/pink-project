@@ -1,0 +1,7 @@
+{
+  "post_id": "INT PRIMARY KEY AUTO_INCREMENT",
+  "user_id": "user_id int, FOREIGN KEY (user_id) REFERENCES users(user_id)",
+  "title": "VARCHAR(255)",
+  "content": "VARCHAR(255)",
+  "date": "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+}

@@ -1,0 +1,6 @@
+{
+  "todo_id": "INT PRIMARY KEY AUTO_INCREMENT",
+  "user_id": "user_id int, FOREIGN KEY (user_id) REFERENCES users(user_id)",
+  "content": "VARCHAR(255)",
+  "checked": "BOOLEAN"
+}
