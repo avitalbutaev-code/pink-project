@@ -1,24 +1,24 @@
-const todoRepository = require("../repositories/todos.repository");
+const todoRepository = require("../repositories/todos.repositories");
 
 class TodosService {
-  async createTodo(content, userId) {
+  async createTodo(content, userId, checked = false) {
     if (content === undefined) {
       throw new Error("content are required");
     }
     if (typeof content !== "string" || content.trim().length === 0) {
       throw new Error("content must be a string");
     }
-    const todoId = await todoRepository.create(content, checked, userId);
+    const todoId = await todoRepository.create(content.trim(), userId);
     return {
       id: todoId,
       content: content,
-      checked: false,
+      checked,
       user_id: userId,
     };
   }
 
-  async getAllTodos() {
-    return await todoRepository.findAll();
+  async getAllTodos(userId) {
+    return await todoRepository.findAll(userId);
   }
   async deleteTodo(id) {
     if (!id) {
@@ -37,10 +37,8 @@ class TodosService {
     if (!id) {
       throw new Error("Todo ID is required");
     }
-    const { todoId, userId, content } = updates;
-    if (!content) {
-      throw new Error("content must be provided");
-    }
+
+    const { content, checked } = updates;
     const updateData = {};
     if (content !== undefined) {
       if (typeof content !== "string" || content.trim().length === 0) {
@@ -49,21 +47,18 @@ class TodosService {
       updateData.content = content.trim();
     }
 
+    if (checked !== undefined) {
+      updateData.checked = Boolean(checked);
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      throw new Error("No valid fields provided for update");
+    }
+
     const result = await todoRepository.update(id, updateData);
-    // if (result.affectedRows === 0) {
-    //   throw new Error("Teacher not found");
-    // }
 
     return { id: parseInt(id), ...updateData };
   }
-
-  //   async getTodoById(id) {
-  //     const todo = await todoRepository.findById(id);
-  //     if (!todo) {
-  //       throw new Error("todo not found");
-  //     }
-  //     return todo;
-  //   }
 }
 
-module.exports = new TodoService();
+module.exports = new TodosService();
