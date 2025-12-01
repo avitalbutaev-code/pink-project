@@ -10,6 +10,14 @@ router.get("/", async (req, res) => {
     handleServiceError(error, res);
   }
 });
+router.get("/:userId", async (req, res) => {
+  try {
+    const posts = await postService.getAllPosts(req.params.userId);
+    res.json(posts);
+  } catch (err) {
+    handleServiceError(error, res);
+  }
+});
 
 router.post("/:userId", async (req, res) => {
   try {
