@@ -1,21 +1,22 @@
 const express = require("express");
 const router = express.Router();
 const postService = require("../services/posts-services");
-
+const { handleServiceError } = require("../services/handleError");
 router.get("/", async (req, res) => {
   try {
     const posts = await postService.getAllPosts();
     res.json(posts);
   } catch (err) {
-    handleServiceError(error, res);
+    handleServiceError(err, res);
   }
 });
 router.get("/:userId", async (req, res) => {
   try {
+    console.log(req.params.userId);
     const posts = await postService.getAllPosts(req.params.userId);
     res.json(posts);
   } catch (err) {
-    handleServiceError(error, res);
+    handleServiceError(err, res);
   }
 });
 
@@ -29,7 +30,7 @@ router.post("/:userId", async (req, res) => {
     );
     res.json(result);
   } catch (err) {
-    handleServiceError(error, res);
+    handleServiceError(err, res);
   }
 });
 
@@ -43,7 +44,7 @@ router.put("/:userId/:postId", async (req, res) => {
     );
     res.json(result);
   } catch (err) {
-    handleServiceError(error, res);
+    handleServiceError(err, res);
   }
 });
 
@@ -55,7 +56,7 @@ router.delete("/:userId/:postId", async (req, res) => {
     );
     res.json(result);
   } catch (err) {
-    handleServiceError(error, res);
+    handleServiceError(err, res);
   }
 });
 

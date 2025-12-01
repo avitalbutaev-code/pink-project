@@ -1,6 +1,7 @@
 const connection = require("../db/connection");
 
 async function getPosts(user_id = undefined) {
+  console.log(user_id);
   let query = `
     SELECT posts.post_id, posts.user_id, users.username,
            posts.title, posts.content, posts.date

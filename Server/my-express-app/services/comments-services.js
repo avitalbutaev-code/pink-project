@@ -1,7 +1,9 @@
 const commentsRepo = require("../repositories/comments-repo");
 
 async function getPostComments(postId) {
-  return await commentsRepo.getComments(postId);
+  const [comments] = await commentsRepo.getComments(postId);
+  if (!comments) throw new Error("not found");
+  return comments;
 }
 
 async function createComment(userId, postId, content) {

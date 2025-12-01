@@ -1,5 +1,5 @@
 {
   "user_id": "INT PRIMARY KEY AUTO_INCREMENT",
-  "userame": "VARCHAR(255)",
+  "username": "VARCHAR(255)",
   "phone": "VARCHAR(255)"
 }
