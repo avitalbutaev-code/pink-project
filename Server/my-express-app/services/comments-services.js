@@ -1,21 +1,27 @@
 const commentsRepo = require("../repositories/comments-repo");
 
 async function getPostComments(postId) {
-  const [comments] = await commentsRepo.getComments(postId);
-  if (!comments) throw new Error("not found");
+  if (!postId) throw new Error("postId required");
+  const comments = await commentsRepo.getCommentsByPostId(postId);
   return comments;
 }
 
-async function createComment(userId, postId, content) {
-  return await commentsRepo.addComment(userId, postId, content);
+async function createComment(postId, userId, title, content) {
+  if (!postId || !userId || !title || !content) {
+    const err = new Error("postId, userId, title, and content required");
+    err.code = "MISSING_REQUIRED_FIELDS";
+    throw err;
+  }
+  return await commentsRepo.createComment(postId, userId, title, content);
 }
 
-async function editComment(userId, commentId, content) {
-  return await commentsRepo.updateComment(userId, commentId, content);
+async function removeComment(commentId) {
+  if (!commentId) throw new Error("commentId required");
+  await commentsRepo.deleteComment(commentId);
 }
 
-async function removeComment(userId, commentId) {
-  return await commentsRepo.deleteComment(userId, commentId);
-}
-
-module.exports = { getPostComments, createComment, editComment, removeComment };
+module.exports = {
+  getPostComments,
+  createComment,
+  removeComment,
+};

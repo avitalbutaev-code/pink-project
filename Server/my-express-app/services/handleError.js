@@ -1,20 +1,15 @@
-function handleServiceError(error, res) {
-  console.error("Service error:", error);
+function handleServiceError(err, res) {
+  console.error(err);
 
-  if (
-    error.message.includes("required") ||
-    error.message.includes("must be") ||
-    error.message.includes("Invalid")
-  ) {
-    return res.status(400).json({ error: error.message });
+  if (err.code === "MISSING_REQUIRED_FIELDS") {
+    return res.status(400).json({ error: err.message });
   }
 
-  if (error.message.includes("not found")) {
-    return res.status(404).json({ error: error.message });
+  if (err.message === "not found") {
+    return res.status(404).json({ error: err.message });
   }
-  return res
-    .status(500)
-    .json({ error: error.message || "Internal server error" });
+
+  return res.status(500).json({ error: "Server error" });
 }
 
 module.exports = { handleServiceError };

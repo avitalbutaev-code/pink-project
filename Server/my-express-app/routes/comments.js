@@ -8,47 +8,31 @@ router.get("/:postId", async (req, res) => {
     const comments = await commentsService.getPostComments(req.params.postId);
     res.json(comments);
   } catch (err) {
-    handleServiceError(error, res);
+    handleServiceError(err, res);
   }
 });
 
-router.post("/:userId/:postId", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    const { content } = req.body;
-    const result = await commentsService.createComment(
-      req.params.userId,
-      req.params.postId,
+    const { postId, userId, title, content } = req.body;
+    const comment = await commentsService.createComment(
+      postId,
+      userId,
+      title,
       content
     );
-    res.json(result);
+    res.json(comment);
   } catch (err) {
-    handleServiceError(error, res);
+    handleServiceError(err, res);
   }
 });
 
-router.put("/:userId/:commentId", async (req, res) => {
+router.delete("/:commentId", async (req, res) => {
   try {
-    const { content } = req.body;
-    const result = await commentsService.editComment(
-      req.params.userId,
-      req.params.commentId,
-      content
-    );
-    res.json(result);
+    await commentsService.removeComment(req.params.commentId);
+    res.json({ success: true });
   } catch (err) {
-    handleServiceError(error, res);
-  }
-});
-
-router.delete("/:userId/:commentId", async (req, res) => {
-  try {
-    const result = await commentsService.removeComment(
-      req.params.userId,
-      req.params.commentId
-    );
-    res.json(result);
-  } catch (err) {
-    handleServiceError(error, res);
+    handleServiceError(err, res);
   }
 });
 

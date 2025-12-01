@@ -8,36 +8,29 @@ async function createTables() {
     console.log("Connected to database:", connection.config.database);
 
     const entitiesPath = path.join(__dirname, "../entities");
-    let tables = await fs.readdir(entitiesPath);
+    let files = await fs.readdir(entitiesPath);
 
-    const tableNames = tables.map((f) => path.parse(f).name);
+    files = files.filter((f) => f.endsWith(".json"));
 
-    const dependencyOrder = ["users", "password", "posts", "comments", "todos"];
-
-    tables.sort((a, b) => {
+    const dependencyOrder = [
+      "users",
+      "user_passwords",
+      "posts",
+      "comments",
+      "todos",
+    ];
+    files.sort((a, b) => {
       const nameA = path.parse(a).name;
       const nameB = path.parse(b).name;
-
-      const indexA = dependencyOrder.indexOf(nameA);
-      const indexB = dependencyOrder.indexOf(nameB);
-
-      return indexA - indexB;
+      return dependencyOrder.indexOf(nameA) - dependencyOrder.indexOf(nameB);
     });
 
-    for (const file of tables) {
-      if (!file.endsWith(".json")) {
-        console.log("⚠️  Skipping non-json file:", file);
-        continue;
-      }
-
+    for (const file of files) {
       const tableName = path.parse(file).name;
       console.log(`\n📌 Creating table: ${tableName}`);
 
-      const fileContent = await fs.readFile(
-        path.join(entitiesPath, file),
-        "utf-8"
-      );
-      const tableObj = JSON.parse(fileContent);
+      const content = await fs.readFile(path.join(entitiesPath, file), "utf-8");
+      const tableObj = JSON.parse(content);
 
       let columns = [];
       let constraints = [];
@@ -54,11 +47,9 @@ async function createTables() {
         columns.push(...constraints);
       }
 
-      const query = `
-        CREATE TABLE IF NOT EXISTS ${tableName} (
-          ${columns.join(",\n")}
-        );
-      `;
+      const query = `CREATE TABLE IF NOT EXISTS ${tableName} (\n${columns.join(
+        ",\n"
+      )}\n) `;
 
       try {
         await connection.promise().query(query);
