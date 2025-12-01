@@ -1,48 +1,62 @@
-var express = require("express");
-var router = express.Router();
-const { createTables } = require("../scripts/createTables");
-const multer = require("multer");
-const os = require("os");
-const { handleError } = require('../services/handleError');
-const upload = multer({ dest: os.tmpdir() });
-router.get('/', async (req, res) => {
+const express = require("express");
+const router = express.Router();
+const postService = require("../services/posts-services");
+
+router.get("/", async (req, res) => {
   try {
-    const classrooms = await ;
-    res.json(classrooms);
-  } catch (error) {
-    handleError(error, res);
+    const posts = await postService.getAllPosts();
+    res.json(posts);
+  } catch (err) {
+    handleServiceError(error, res);
   }
 });
-router.get("/:user", async (req, res) => {
+router.get("/:userId", async (req, res) => {
   try {
-    const classrooms = await ;
-    res.json(classrooms);
-  } catch (error) {
-    handleError(error, res);
+    const posts = await postService.getAllPosts(req.params.userId);
+    res.json(posts);
+  } catch (err) {
+    handleServiceError(error, res);
   }
 });
-router.delete("/:user/:postid", async (req, res) => {
+
+router.post("/:userId", async (req, res) => {
   try {
-    const classrooms = await ;
-    res.json(classrooms);
-  } catch (error) {
-    handleError(error, res);
+    const { title, content } = req.body;
+    const result = await postService.createPost(
+      req.params.userId,
+      title,
+      content
+    );
+    res.json(result);
+  } catch (err) {
+    handleServiceError(error, res);
   }
 });
-router.put("/:user/:postid",async (req, res) => {
+
+router.put("/:userId/:postId", async (req, res) => {
   try {
-    const classrooms = await ;
-    res.json(classrooms);
-  } catch (error) {
-    handleError(error, res);
+    const { content } = req.body;
+    const result = await postService.editPost(
+      req.params.userId,
+      req.params.postId,
+      content
+    );
+    res.json(result);
+  } catch (err) {
+    handleServiceError(error, res);
   }
 });
-router.post("/:user/",async (req, res) => {
+
+router.delete("/:userId/:postId", async (req, res) => {
   try {
-    const classrooms = await ;
-    res.json(classrooms);
-  } catch (error) {
-    handleError(error, res);
+    const result = await postService.removePost(
+      req.params.userId,
+      req.params.postId
+    );
+    res.json(result);
+  } catch (err) {
+    handleServiceError(error, res);
   }
 });
+
 module.exports = router;
