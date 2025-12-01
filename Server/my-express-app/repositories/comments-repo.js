@@ -12,6 +12,7 @@ async function getComments(postId) {
   `,
     [postId]
   );
+
   return comments;
 }
 

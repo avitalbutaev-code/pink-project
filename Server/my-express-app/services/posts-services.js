@@ -1,7 +1,8 @@
 const postsRepo = require("../repositories/post-repo");
 
 async function getAllPosts(userId = undefined) {
-  return await postsRepo.getPosts((userId = undefined));
+  console.log(userId);
+  return await postsRepo.getPosts(userId);
 }
 
 async function createPost(userId, title, content) {

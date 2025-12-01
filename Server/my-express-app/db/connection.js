@@ -3,7 +3,7 @@ let con = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "z10mz10m",
-  database: " pink_db",
+  database: "pink_db",
   multipleStatements: true,
 });
 con.connect((err) => {
