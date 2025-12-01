@@ -1,6 +1,10 @@
 var express = require("express");
 var router = express.Router();
-router.get("/", async (req, res, next) => {
+const multer = require("multer");
+const os = require("os");
+const { handleError } = require("../services/handleError");
+const upload = multer({ dest: os.tmpdir() });
+router.get("/:userId", async (req, res, next) => {
   try {
     const userId = req.params.userId;
     const todos = await todosService.getAllTodos(userId);
@@ -10,7 +14,7 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/:userId", async (req, res) => {
   try {
     const content = req.body;
     const userId = req.params.userId;
@@ -35,10 +39,10 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:userId", async (req, res) => {
   try {
     const userId = req.params.id;
-    const todoId = req.params.id;
+    const todoId = req.body.todoId;
     const { content, checked } = req.body;
     const todo = await todoService.updateTodo(todoId, {
       userId,
