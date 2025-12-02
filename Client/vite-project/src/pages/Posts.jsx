@@ -35,7 +35,7 @@ export default function Posts() {
   return (
     <div className="posts">
       <h2>Posts</h2>
-      <label>
+      <label className="show-posts">
         <input
           type="checkbox"
           checked={showAll}
@@ -43,7 +43,7 @@ export default function Posts() {
         />
         Show posts of all users
       </label>
-      <div>
+      <div className="add-post-form">
         <input
           placeholder="Post title"
           value={newPostTitle}

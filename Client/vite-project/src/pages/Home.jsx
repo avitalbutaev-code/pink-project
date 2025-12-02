@@ -10,21 +10,26 @@ export default function Home({ logout }) {
   }
 
   return (
-    <div className="home">
-      <h1>Welcome, {user.username}</h1>
-      <nav>
-        <Link to="/home/info">Info</Link> | <Link to="/home/todos">Todos</Link>{" "}
-        | <Link to="/home/posts">Posts</Link> |{" "}
-        <button onClick={logout}>Logout</button>
-      </nav>
+    <div className="home-container">
+      <header className="home-header">
+        <h1>Welcome, {user.username}</h1>
+        <nav>
+          <Link to="/home/info">Info</Link>
+          <Link to="/home/todos">Todos</Link>
+          <Link to="/home/posts">Posts</Link>
+          <button onClick={logout}>Logout</button>
+        </nav>
+      </header>
 
-      <Routes>
-        <Route path="info" element={<Info />} />
-        <Route path="todos" element={<Todos />} />
-        <Route path="posts" element={<Posts />} />
-        <Route path="" element={<Navigate to="info" />} />
-        <Route path="*" element={<Navigate to="info" />} />
-      </Routes>
+      <main className="home-content">
+        <Routes>
+          <Route path="info" element={<Info />} />
+          <Route path="todos" element={<Todos />} />
+          <Route path="posts" element={<Posts />} />
+          <Route path="" element={<Navigate to="info" />} />
+          <Route path="*" element={<Navigate to="info" />} />
+        </Routes>
+      </main>
     </div>
   );
 }

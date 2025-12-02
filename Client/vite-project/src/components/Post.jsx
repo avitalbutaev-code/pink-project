@@ -30,32 +30,41 @@ export default function Post({ post, refreshPosts }) {
   };
 
   return (
-    <li>
-      <h3>
-        {post.title} (by {post.username})
-      </h3>
-      <span className="date">{new Date(post.date).toLocaleDateString()}</span>
-      <p>{post.content}</p>
-      {user.user_id === post.user_id && (
-        <button onClick={handleDelete}>Delete</button>
-      )}
-      <div>
-        <input
-          placeholder="New comment"
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-        />
-        <button onClick={handleAddComment}>Add Comment</button>
+    <li className="post-item">
+      <div className="post-header">
+        <h3>{post.title}</h3>
+        <span className="post-user">by {post.username}</span>
+        <span className="post-date">
+          {" "}
+          {new Date(post.date).toLocaleDateString()}
+        </span>
+        {user.user_id === post.user_id && (
+          <button className="delete-post" onClick={handleDelete}>
+            Delete
+          </button>
+        )}
       </div>
-      <ul>
-        {comments.map((comment) => (
-          <Comment
-            key={comment.comment_id}
-            comment={comment}
-            refreshComments={setComments}
+      <p>{post.content}</p>
+
+      <div className="post-comments">
+        <div className="comment-input">
+          <input
+            placeholder="New comment"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
           />
-        ))}
-      </ul>
+          <button onClick={handleAddComment}>Add</button>
+        </div>
+        <ul>
+          {comments.map((comment) => (
+            <Comment
+              key={comment.comment_id}
+              comment={comment}
+              refreshComments={setComments}
+            />
+          ))}
+        </ul>
+      </div>
     </li>
   );
 }

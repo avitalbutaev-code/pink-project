@@ -31,7 +31,7 @@ export default function Todos() {
   };
 
   return (
-    <div>
+    <div className="todos">
       <h2>Todos</h2>
       <input
         value={newTodo}
