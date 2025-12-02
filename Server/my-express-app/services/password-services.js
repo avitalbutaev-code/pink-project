@@ -1,4 +1,4 @@
-const passwordRepo = require("../repositories/post-repo");
+const passwordRepo = require("../repositories/password-repo");
 
 async function setPassword(userId, password) {
   if (!userId || !password) {

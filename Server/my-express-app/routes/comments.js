@@ -12,15 +12,28 @@ router.get("/:postId", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/:userId/:postId", async (req, res) => {
   try {
-    const { postId, userId, title, content } = req.body;
+    const postId = req.params.postId;
+    const userId = req.params.userId;
+    const content = req.body.content;
+    console.log("content: ", content);
     const comment = await commentsService.createComment(
       postId,
       userId,
-      title,
       content
     );
+    res.json(comment);
+  } catch (err) {
+    handleServiceError(err, res);
+  }
+});
+router.put("/:commentId", async (req, res) => {
+  try {
+    const commentId = req.params.commentId;
+    const newComment = req.body.content;
+    console.log("newComment: ", newComment);
+    const comment = await commentsService.updateComment(commentId, newComment);
     res.json(comment);
   } catch (err) {
     handleServiceError(err, res);

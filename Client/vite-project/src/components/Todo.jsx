@@ -3,8 +3,10 @@ export default function Todo({ todo, onUpdate, onDelete }) {
     <li>
       <input
         type="checkbox"
-        checked={todo.checked}
-        onChange={(e) => onUpdate(todo.todo_id, { checked: e.target.checked })}
+        checked={!!todo.checked}
+        onChange={(e) =>
+          onUpdate(todo.todo_id, { checked: e.target.checked ? 1 : 0 })
+        }
       />
       {todo.content}
       <button onClick={() => onDelete(todo.todo_id)}>Delete</button>

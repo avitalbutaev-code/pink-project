@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
 import LoginPage from "./pages/Login";
 import Home from "./pages/Home";
-
+import "./App.css";
 function App() {
-  const [user, setUser] = useState(() => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
     const saved = localStorage.getItem("currentUser");
-    return saved ? JSON.parse(saved) : null;
-  });
+    if (saved) {
+      setUser(JSON.parse(saved));
+    }
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("currentUser");
@@ -26,14 +30,10 @@ function App() {
         <Route
           path="/home/*"
           element={
-            user ? (
-              <Home user={user} logout={handleLogout} />
-            ) : (
-              <Navigate to="/login" />
-            )
+            user ? <Home logout={handleLogout} /> : <Navigate to="/login" />
           }
         />
-        <Route path="*" element={<Navigate to={user ? "/app" : "/login"} />} />
+        <Route path="*" element={<Navigate to={user ? "/home" : "/login"} />} />
       </Routes>
     </Router>
   );

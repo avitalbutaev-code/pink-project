@@ -13,12 +13,12 @@ export default function Login({ setUser }) {
       localStorage.setItem("currentUser", JSON.stringify(user));
       setUser(user);
     } catch (err) {
-      setError("login failed " + err.message);
+      setError("Login failed, please try again ");
     }
   };
 
   return (
-    <div>
+    <div className="login">
       <h1>Login</h1>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleSubmit}>

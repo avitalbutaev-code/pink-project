@@ -3,10 +3,10 @@ const connection = require("../db/connection");
 async function getAllPosts() {
   const [rows] = await connection.promise().query(
     `
-    SELECT p.*, u.username, u.phone
-    FROM posts p
-    LEFT JOIN users u ON u.user_id = p.user_id
-    ORDER BY p.date DESC
+    SELECT posts.*, users.username, users.phone
+    FROM posts 
+    LEFT JOIN users  ON users.user_id = posts.user_id
+    ORDER BY posts.date DESC
     `
   );
   return rows;
@@ -15,10 +15,10 @@ async function getAllPosts() {
 async function getPostById(postId) {
   const [rows] = await connection.promise().query(
     `
-    SELECT p.*, u.username, u.phone
-    FROM posts p
-    LEFT JOIN users u ON u.user_id = p.user_id
-    WHERE p.post_id = ?
+    SELECT posts.*, users.username, users.phone
+    FROM posts 
+    LEFT JOIN users ON users.user_id = posts.user_id
+    WHERE posts.post_id = ?
     `,
     [postId]
   );
@@ -28,11 +28,11 @@ async function getPostById(postId) {
 async function getPostsByUserId(userId) {
   const [rows] = await connection.promise().query(
     `
-    SELECT p.*, u.username, u.phone
-    FROM posts p
-    LEFT JOIN users u ON u.user_id = p.user_id
-    WHERE p.user_id = ?
-    ORDER BY p.date DESC
+    SELECT posts.*, users.username, users.phone
+    FROM posts 
+    LEFT JOIN users  ON users.user_id = posts.user_id
+    WHERE posts.user_id = ?
+    ORDER BY posts.date DESC
     `,
     [userId]
   );
@@ -54,6 +54,7 @@ async function deletePost(postId) {
   await connection
     .promise()
     .query(`DELETE FROM posts WHERE post_id = ?`, [postId]);
+  return { success: true };
 }
 
 module.exports = {

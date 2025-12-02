@@ -1,96 +1,92 @@
 const API_BASE = "http://localhost:3000";
 
+async function handleResponse(res) {
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ message: res.statusText }));
+    throw new Error(err.message || "Request failed");
+  }
+  return res.json();
+}
+
 export async function loginUser(username, password) {
   const res = await fetch(`${API_BASE}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password }),
   });
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.message || "Login failed");
-  }
-  return res.json();
+  return handleResponse(res);
 }
 
+// Todos
 export async function fetchTodos(userId) {
-  const res = await fetch(`${API_BASE}/todos/${userId}`);
-  if (!res.ok) throw new Error("Failed to fetch todos");
-  return res.json();
+  return handleResponse(await fetch(`${API_BASE}/todos/${userId}`));
 }
-
 export async function createTodo(userId, content) {
   const res = await fetch(`${API_BASE}/todos/${userId}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ content }),
   });
-  if (!res.ok) throw new Error("Failed to create todo");
-  return res.json();
+  return handleResponse(res);
 }
-
 export async function updateTodo(userId, todoId, updates) {
   const res = await fetch(`${API_BASE}/todos/${userId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ todoId, ...updates }),
   });
-  if (!res.ok) throw new Error("Failed to update todo");
-  return res.json();
+  return handleResponse(res);
 }
-
 export async function deleteTodo(todoId) {
   const res = await fetch(`${API_BASE}/todos/${todoId}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to delete todo");
-  return res.json();
+  return handleResponse(res);
 }
 
+// Posts
 export async function fetchPosts(userId) {
   const url = userId ? `${API_BASE}/posts/${userId}` : `${API_BASE}/posts`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to fetch posts");
-  return res.json();
+  return handleResponse(await fetch(url));
 }
-
 export async function createPost(userId, title, content) {
   const res = await fetch(`${API_BASE}/posts/${userId}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ title, content }),
   });
-  if (!res.ok) throw new Error("Failed to create post");
-  return res.json();
+  return handleResponse(res);
 }
 
+export async function deletePost(postId) {
+  const res = await fetch(`${API_BASE}/posts/${postId}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+  });
+  return handleResponse(res);
+}
+
+// Comments
 export async function fetchComments(postId) {
-  const res = await fetch(`${API_BASE}/comments/${postId}`);
-  if (!res.ok) throw new Error("Failed to fetch comments");
-  return res.json();
+  return handleResponse(await fetch(`${API_BASE}/comments/${postId}`));
 }
-
 export async function createComment(userId, postId, content) {
   const res = await fetch(`${API_BASE}/comments/${userId}/${postId}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ content }),
   });
-  if (!res.ok) throw new Error("Failed to create comment");
-  return res.json();
+  return handleResponse(res);
 }
-export async function updateComment(userId, commentId, content) {
-  const res = await fetch(`${API_BASE}/comments/${userId}/${commentId}`, {
+export async function updateComment(commentId, content) {
+  const res = await fetch(`${API_BASE}/comments/${commentId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ content }),
   });
-  if (!res.ok) throw new Error("Failed to update comment");
-  return res.json();
+  return handleResponse(res);
 }
-
-export async function deleteComment(userId, commentId) {
-  const res = await fetch(`${API_BASE}/comments/${userId}/${commentId}`, {
+export async function deleteComment(commentId) {
+  const res = await fetch(`${API_BASE}/comments/${commentId}`, {
     method: "DELETE",
   });
-  if (!res.ok) throw new Error("Failed to delete comment");
-  return res.json();
+  return handleResponse(res);
 }

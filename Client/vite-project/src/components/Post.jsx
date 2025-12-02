@@ -1,33 +1,44 @@
 import { useEffect, useState } from "react";
-import { fetchComments, createComment } from "../api";
+import { fetchComments, createComment, deletePost } from "../api";
 import Comment from "./Comment";
 
-export default function Post({ post, currentUser, refreshPosts }) {
+export default function Post({ post, refreshPosts }) {
+  const user = JSON.parse(localStorage.getItem("currentUser"));
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
 
-  async function loadComments() {
+  const loadComments = async () => {
     const data = await fetchComments(post.post_id);
     setComments(data);
-  }
+  };
 
   useEffect(() => {
     loadComments();
-  }, []);
+  }, [post.post_id]);
 
-  async function handleAddComment() {
+  const handleAddComment = async () => {
     if (!newComment) return;
-    await createComment(currentUser.user_id, post.post_id, newComment);
+    console.log(user.user_id, post.post_id, newComment);
+
+    const created = await createComment(user.user_id, post.post_id, newComment);
+    setComments((prev) => [...prev, created]);
     setNewComment("");
-    loadComments();
-  }
+  };
+  const handleDelete = async () => {
+    await deletePost(post.post_id);
+    refreshPosts();
+  };
 
   return (
     <li>
       <h3>
         {post.title} (by {post.username})
       </h3>
+      <span className="date">{new Date(post.date).toLocaleDateString()}</span>
       <p>{post.content}</p>
+      {user.user_id === post.user_id && (
+        <button onClick={handleDelete}>Delete</button>
+      )}
       <div>
         <input
           placeholder="New comment"
@@ -41,8 +52,7 @@ export default function Post({ post, currentUser, refreshPosts }) {
           <Comment
             key={comment.comment_id}
             comment={comment}
-            currentUser={currentUser}
-            refreshComments={loadComments}
+            refreshComments={setComments}
           />
         ))}
       </ul>

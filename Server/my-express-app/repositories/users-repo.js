@@ -19,7 +19,6 @@ async function getUserByUsername(username) {
   return rows[0] || null;
 }
 
-// Added optional phone parameter
 async function createUser(username, phone = null) {
   const [result] = await connection
     .promise()

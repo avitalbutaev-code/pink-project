@@ -26,17 +26,16 @@ router.post("/", async (req, res) => {
   try {
     const { username, password, phone } = req.body;
 
-    if (!username || !password) {
-      const err = new Error("username and password are required");
-      err.code = "MISSING_REQUIRED_FIELDS";
-      throw err;
-    }
-
+    // Create user
     const user = await usersService.createUser(username, phone);
 
+    // Set password
     await passwordService.setPassword(user.user_id, password);
 
-    res.status(201).json(user);
+    res.json({
+      message: "User created successfully",
+      user,
+    });
   } catch (err) {
     handleServiceError(err, res);
   }

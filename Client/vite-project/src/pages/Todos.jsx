@@ -2,35 +2,33 @@ import { useEffect, useState } from "react";
 import { fetchTodos, createTodo, updateTodo, deleteTodo } from "../api";
 import Todo from "../components/Todo";
 
-export default function Todos({ user }) {
+export default function Todos() {
+  const user = JSON.parse(localStorage.getItem("currentUser"));
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState("");
 
-  async function loadTodos() {
-    const data = await fetchTodos(user.user_id);
-    setTodos(data);
-  }
-
   useEffect(() => {
-    loadTodos();
-  }, []);
+    fetchTodos(user.user_id).then(setTodos).catch(console.error);
+  }, [user.user_id]);
 
-  async function handleAdd() {
+  const handleAdd = async () => {
     if (!newTodo) return;
-    await createTodo(user.user_id, newTodo);
+    const created = await createTodo(user.user_id, newTodo);
+    setTodos((prev) => [...prev, created]);
     setNewTodo("");
-    loadTodos();
-  }
+  };
 
-  async function handleUpdate(todoId, updates) {
+  const handleUpdate = async (todoId, updates) => {
     await updateTodo(user.user_id, todoId, updates);
-    loadTodos();
-  }
+    setTodos((prev) =>
+      prev.map((t) => (t.todo_id === todoId ? { ...t, ...updates } : t))
+    );
+  };
 
-  async function handleDelete(todoId) {
+  const handleDelete = async (todoId) => {
     await deleteTodo(todoId);
-    loadTodos();
-  }
+    setTodos((prev) => prev.filter((t) => t.todo_id !== todoId));
+  };
 
   return (
     <div>

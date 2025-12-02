@@ -2,41 +2,44 @@ import { useEffect, useState } from "react";
 import { fetchPosts, createPost } from "../api";
 import Post from "../components/Post";
 
-export default function Posts({ user }) {
+export default function Posts() {
+  const user = JSON.parse(localStorage.getItem("currentUser"));
   const [posts, setPosts] = useState([]);
   const [newPostTitle, setNewPostTitle] = useState("");
   const [newPostContent, setNewPostContent] = useState("");
   const [showAll, setShowAll] = useState(true);
+
   const loadPosts = async () => {
-    const data = showAll ? await fetchPosts() : await fetchPosts(user.id);
+    const data = showAll ? await fetchPosts() : await fetchPosts(user.user_id);
     setPosts(data);
   };
 
   useEffect(() => {
     loadPosts();
   }, [showAll]);
-  async function changeShow() {
-    setShowAll((prev) => !prev);
-  }
-  async function handleAddPost() {
+
+  const handleAddPost = async () => {
+    console.log(user.user_id, newPostTitle, newPostContent);
     if (!newPostTitle || !newPostContent) return;
-    await createPost(user.user_id, newPostTitle, newPostContent);
+
+    const created = await createPost(
+      user.user_id,
+      newPostTitle,
+      newPostContent
+    );
+    setPosts((prev) => [...prev, created]);
     setNewPostTitle("");
     setNewPostContent("");
-    loadPosts();
-  }
+  };
 
   return (
-    <div>
+    <div className="posts">
       <h2>Posts</h2>
-
       <label>
         <input
           type="checkbox"
           checked={showAll}
-          onChange={() => {
-            changeShow();
-          }}
+          onChange={() => setShowAll((prev) => !prev)}
         />
         Show posts of all users
       </label>
@@ -55,12 +58,7 @@ export default function Posts({ user }) {
       </div>
       <ul>
         {posts.map((post) => (
-          <Post
-            key={post.post_id}
-            post={post}
-            currentUser={user}
-            refreshPosts={loadPosts}
-          />
+          <Post key={post.post_id} post={post} refreshPosts={loadPosts} />
         ))}
       </ul>
     </div>

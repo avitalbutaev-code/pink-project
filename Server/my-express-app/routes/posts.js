@@ -21,9 +21,10 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/:userId", async (req, res) => {
   try {
-    const { userId, title, content } = req.body;
+    const userId = req.params.userId;
+    const { title, content } = req.body;
     const post = await postsService.createPost(userId, title, content);
     res.json(post);
   } catch (err) {

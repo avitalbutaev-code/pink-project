@@ -1,25 +1,32 @@
 import { useState } from "react";
 import { updateComment, deleteComment } from "../api";
 
-export default function Comment({ comment, currentUser, refreshComments }) {
+export default function Comment({ comment, refreshComments }) {
+  const user = JSON.parse(localStorage.getItem("currentUser"));
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState(comment.content);
 
   const handleSave = async () => {
     if (!text) return;
-    await updateComment(currentUser.user_id, comment.comment_id, text);
+    await updateComment(comment.comment_id, text);
     setEditing(false);
-    refreshComments();
+    refreshComments((prev) =>
+      prev.map((c) =>
+        c.comment_id === comment.comment_id ? { ...c, content: text } : c
+      )
+    );
   };
 
   const handleDelete = async () => {
-    await deleteComment(currentUser.user_id, comment.comment_id);
-    refreshComments();
+    await deleteComment(comment.comment_id);
+    refreshComments((prev) =>
+      prev.filter((c) => c.comment_id !== comment.comment_id)
+    );
   };
 
   return (
     <li>
-      <strong>{comment.username}:</strong>{" "}
+      <strong>{comment.username}:</strong>
       {editing ? (
         <>
           <input value={text} onChange={(e) => setText(e.target.value)} />
@@ -29,7 +36,10 @@ export default function Comment({ comment, currentUser, refreshComments }) {
       ) : (
         <span>{comment.content}</span>
       )}
-      {currentUser.user_id === comment.user_id && !editing && (
+      <span className="date">
+        {new Date(comment.date).toLocaleDateString()}
+      </span>
+      {user.user_id === comment.user_id && !editing && (
         <>
           <button onClick={() => setEditing(true)}>Edit</button>
           <button onClick={handleDelete}>Delete</button>

@@ -1,20 +1,29 @@
-import { Routes, Route, Link } from "react-router";
+import { Routes, Route, Link, Navigate } from "react-router";
 import Info from "./Info";
 import Todos from "./Todos";
 import Posts from "./Posts";
 
-export default function Home({ user, logout }) {
+export default function Home({ logout }) {
+  const user = JSON.parse(localStorage.getItem("currentUser"));
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+
   return (
-    <div>
+    <div className="home">
       <h1>Welcome, {user.username}</h1>
       <nav>
-        <Link to="info">Info</Link> | <Link to="todos">Todos</Link> |{" "}
-        <Link to="posts">Posts</Link> | <button onClick={logout}>Logout</button>
+        <Link to="/home/info">Info</Link> | <Link to="/home/todos">Todos</Link>{" "}
+        | <Link to="/home/posts">Posts</Link> |{" "}
+        <button onClick={logout}>Logout</button>
       </nav>
+
       <Routes>
-        <Route path="info" element={<Info user={user} />} />
-        <Route path="todos" element={<Todos user={user} />} />
-        <Route path="posts" element={<Posts user={user} />} />
+        <Route path="info" element={<Info />} />
+        <Route path="todos" element={<Todos />} />
+        <Route path="posts" element={<Posts />} />
+        <Route path="" element={<Navigate to="info" />} />
+        <Route path="*" element={<Navigate to="info" />} />
       </Routes>
     </div>
   );
